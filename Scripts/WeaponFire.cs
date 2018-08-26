@@ -7,25 +7,43 @@ public class WeaponFire : MonoBehaviour {
     public float freq;
     public float waitTime;
     public float damage;
+    WeaponData weaponData;
+    int ammoPerMagazine;
+    int totalAmmo;
+    float reloadingTime;
+    int currentAIM;
+    int leftAmmo;
+    GameObject reloadText;
     LineRenderer line;
 	// Use this for initialization
 	void Start () {
+        AmmoDisplay();
         if (transform.parent.parent.tag == "Player" || transform.parent.parent.tag == "Teammate")
             GetComponentInChildren<EnemyShoot>().enabled = false;
         audioSource = GetComponent<AudioSource>();
         freq = -5f;
+        weaponData = GetComponent<WeaponData>();
+        reloadText = GameObject.Find("Reloading");
+        ammoPerMagazine = weaponData.ammoPerMagazine;
+        totalAmmo = weaponData.totalAmmo;
+        reloadingTime = weaponData.reloadingTime;
+        currentAIM = ammoPerMagazine;
+        leftAmmo = totalAmmo - currentAIM;
 	}
 	
 	// Update is called once per frame
 	void Update () {
+        AmmoDisplay();
         Fire();
 	}
 
     void Fire()
     {
-        if (Input.GetButton("Fire1") && (Time.time - waitTime) >= freq)
+        if (Input.GetButton("Fire1") && (Time.time - waitTime) >= freq&&currentAIM>0&&totalAmmo>0)
         {
             audioSource.Play();
+            currentAIM -= 1;
+            totalAmmo -= 1;
             freq = Time.time;
             Vector3 worldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector2 targetPos = new Vector2(worldPos.x, worldPos.y);
@@ -35,11 +53,30 @@ public class WeaponFire : MonoBehaviour {
             Debug.DrawLine(startPos, targetPos, Color.white, 20, false);
             if (hit.collider != null && hit.collider.gameObject.tag == "Enemy")
             {
-                Debug.Log(hit.collider.gameObject.name);
-                Debug.Log(targetPos);
                 EnemyHealth enemy = hit.collider.GetComponent<EnemyHealth>();
                 enemy.TakeDamage(damage);
             }
+        }
+        else if(currentAIM<=0)
+        {
+            StartCoroutine(Reload());
+        }
+    }
+
+    IEnumerator Reload()
+    {
+        yield return new WaitForSeconds(reloadingTime);
+        currentAIM = ammoPerMagazine;
+        leftAmmo = totalAmmo - currentAIM;
+        StopAllCoroutines();
+    }
+
+    void AmmoDisplay()
+    {
+        if (transform.parent.parent.tag == "Player")
+        {
+            GameObject.Find("Player").GetComponent<AmmoDisplay>().weaponAIM = currentAIM;
+            GameObject.Find("Player").GetComponent<AmmoDisplay>().leftAmmo = leftAmmo;
         }
     }
 }

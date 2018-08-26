@@ -13,16 +13,20 @@ public class EnemyShoot : MonoBehaviour {
 	void Start () {
         audioSource = GetComponent<AudioSource>();
         enemyMovements = GetComponentInParent<EnemyMovements>();
-        freq = GetComponent<WeaponFire>().freq;
-        waitTime = GetComponent<WeaponFire>().waitTime;
-        damage = GetComponent<WeaponFire>().damage;
+        if (GetComponent<WeaponFire>())
+        {
+            freq = GetComponent<WeaponFire>().freq;
+            waitTime = GetComponent<WeaponFire>().waitTime;
+            damage = GetComponent<WeaponFire>().damage;
+        }
         if(transform.parent.parent.tag=="Enemy")
             GetComponent<WeaponFire>().enabled = false;
     }
 	
 	// Update is called once per frame
 	void Update () {
-        insight = enemyMovements.insight;
+        if(enemyMovements)
+            insight = enemyMovements.insight;
         if (insight)
             Shoot();
 	}

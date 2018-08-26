@@ -4,25 +4,36 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class EnemyHealth : MonoBehaviour {
-    private float hp=100f;
+    WeaponPurchase weaponPurchase;
+    public float enemyHP=100f;
 	// Use this for initialization
 	void Start () {
-        GetComponentInChildren<RockerLauncher>().enabled = false;
+        if(GetComponentInChildren<RockerLauncher>())
+        {
+            GetComponentInChildren<RockerLauncher>().enabled = false;
+        }
+        weaponPurchase = GameObject.Find("PurchaseSystem").GetComponent<WeaponPurchase>();
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		
+        Die();
 	}
 
     public void TakeDamage(float damage)
     {
-        hp -= damage;
-        if (hp <= 0)
-        {
-            Destroy(this.gameObject);
-            GameObject.Find("Player").GetComponent<PlayerHealth>().Score.CTScore += 10;
-        }
+        enemyHP -= damage;
         //Debug.Log(hp);
+    }
+
+    void Die()
+    {
+        if (enemyHP <= 0f)
+        {
+            Debug.Log("dead");
+            weaponPurchase.currentMoney += 500f;
+            GameObject.Find("Player").GetComponent<PlayerHealth>().Score.CTScore += 10;
+            Destroy(this.gameObject);
+        }
     }
 }

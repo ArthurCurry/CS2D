@@ -13,7 +13,7 @@ public class TeammateMovements : MonoBehaviour {
     public Vector2 currentPosition;
     public Vector2 aimPosition;
     public float stopDistance;
-    public float vision = 2;
+    public float vision = 2f;
 	// Use this for initialization
 	void Start () {
         player = GameObject.FindWithTag("Player");

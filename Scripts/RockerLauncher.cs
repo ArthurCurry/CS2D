@@ -11,6 +11,8 @@ public class RockerLauncher : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
+        if (transform.parent.parent.tag == "Teammate"||transform.parent.parent.tag=="Player")
+            GetComponent<EnemyShoot>().enabled = false;
         audioSource = GetComponent<AudioSource>();
         freq = -5f;
     }
